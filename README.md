@@ -13,6 +13,7 @@ The current method of storing airports is under the Data folder. There are V1 an
 A current partial set of airports is under Data/Snowpiercer, as I have been using my route inspired by it, and creating my route with this code.
 The data under the snowpiercer folder are all AirportNode, stored in a subfolder according to their country.
 If this program reaches a point of having a too many airports (and I think I may be getting there now), I will reformat the folder structure to break up the folders a bit more.
+I have moved some stuff around a bit, so some of the old versions remaining may not work. I do plan on removing the old versions some time soon
 
 A real good chunk of this code was made with GitHub CoPilot, I am really loving it.
 
