@@ -1,4 +1,4 @@
-package AirportData;
+package io.github.greenwolf24.AirplaneSubway.AirportData;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,11 @@ public class Airport
 		country = data[8];
 		latitude = Double.parseDouble(data[4]);
 		longitude = Double.parseDouble(data[5]);
-		altitude = Integer.parseInt(data[6]);
+		try
+		{
+			altitude = Integer.parseInt(data[6]);
+		}
+		catch(Exception e){altitude = -54321;}
 		this.runways = runways;
 	}
 	

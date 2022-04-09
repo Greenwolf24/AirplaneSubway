@@ -1,4 +1,4 @@
-package Graph;
+package io.github.greenwolf24.AirplaneSubway.Graph;
 
 public class AirNode
 {

@@ -1,4 +1,6 @@
-import AirportData.Runway;
+package io.github.greenwolf24.AirplaneSubway;
+
+import io.github.greenwolf24.AirplaneSubway.AirportData.Runway;
 
 import java.util.ArrayList;
 import java.util.Scanner;

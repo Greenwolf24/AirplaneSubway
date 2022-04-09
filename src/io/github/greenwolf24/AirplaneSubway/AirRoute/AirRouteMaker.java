@@ -1,4 +1,4 @@
-package AirRoute;
+package io.github.greenwolf24.AirplaneSubway.AirRoute;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +15,7 @@ public class AirRouteMaker
 		String airportCode = new Scanner(System.in).nextLine();
 		while (!airportCode.equals("done"))
 		{
-			AirRoute.Airport airport = new AirRoute.Airport(airportCode);
+			io.github.greenwolf24.AirplaneSubway.AirRoute.Airport airport = new io.github.greenwolf24.AirplaneSubway.AirRoute.Airport(airportCode);
 			System.out.print("Enter destination airport code: ");
 			String destAirportCode = new Scanner(System.in).nextLine();
 			boolean done = false;
@@ -41,7 +41,7 @@ public class AirRouteMaker
 		}
 	}
 	
-	private static void saveAirport(AirRoute.Airport airport) throws FileNotFoundException
+	private static void saveAirport(io.github.greenwolf24.AirplaneSubway.AirRoute.Airport airport) throws FileNotFoundException
 	{
 		// this will take in the airport and save it to a file
 		// the file name will be the airport code followed by ".airnode"

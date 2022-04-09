@@ -1,9 +1,8 @@
-package AirRoute;
+package io.github.greenwolf24.AirplaneSubway.AirRoute;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class AirRouteMaker2
@@ -14,7 +13,7 @@ public class AirRouteMaker2
 	// until the user enters the word "done".
 	public static void main(String[] args)
 	{
-		System.out.println("Welcome to the AirRoute Maker!");
+		System.out.println("Welcome to the io.github.greenwolf24.AirplaneSubway.AirRoute Maker!");
 		System.out.println("The program wants to make a route for you.");
 		System.out.print("Please give a Callsign prefix that will be used later: ");
 		String callsignPrefix = new Scanner(System.in).nextLine();
@@ -151,8 +150,8 @@ public class AirRouteMaker2
 	
 	private static double getDistance(String airportCode1, String airportCode2)
 	{
-		AirportData.Airport airport1 = AirportData.AirportGrabber.getAirport(airportCode1);
-		AirportData.Airport airport2 = AirportData.AirportGrabber.getAirport(airportCode2);
+		io.github.greenwolf24.AirplaneSubway.AirportData.Airport airport1 = io.github.greenwolf24.AirplaneSubway.AirportData.AirportGrabber.getAirport(airportCode1);
+		io.github.greenwolf24.AirplaneSubway.AirportData.Airport airport2 = io.github.greenwolf24.AirplaneSubway.AirportData.AirportGrabber.getAirport(airportCode2);
 		
 		// set the reusable source country to the first airport's country
 		reusableSourceCountry = airport1.country;

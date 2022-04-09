@@ -1,4 +1,4 @@
-package AirportData;
+package io.github.greenwolf24.AirplaneSubway.AirportData;
 
 public class Runway
 {

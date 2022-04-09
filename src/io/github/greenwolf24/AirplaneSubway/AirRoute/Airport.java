@@ -1,4 +1,4 @@
-package AirRoute;
+package io.github.greenwolf24.AirplaneSubway.AirRoute;
 
 import java.util.ArrayList;
 
