@@ -3,6 +3,7 @@ package io.github.greenwolf24.AirplaneSubway.AirportData;
 import io.github.greenwolf24.AirplaneSubway.CSVFile;
 
 import java.io.File;
+//import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -38,6 +39,54 @@ public class AirportGrabber
 		{
 			System.out.println("Airport not found");
 		}
+	}
+	
+	public static ArrayList<String> smartGrabDistance(String airportCode, double distance)
+	{
+		// the distance is in nautical miles
+		// divide this by 60 to get the number of degrees
+		
+		Airport airport = getAirport(airportCode);
+		if(airport != null)
+		{
+			//Timestamp now = new Timestamp(System.currentTimeMillis());
+			//System.out.println("I am here, Line 53 AirportGrabber");
+			ArrayList<String> airportCodes = new ArrayList<>();
+			int distDegrees = (int)Math.ceil(distance / 60.0);
+			int originLat = (int)Math.round(airport.latitude);
+			int originLon = (int)Math.round(airport.longitude);
+			
+			for(int lat = originLat - distDegrees; lat <= originLat + distDegrees; lat++)
+			{
+				for(int lon = originLon - distDegrees; lon <= originLon + distDegrees; lon++)
+				{
+					try
+					{
+						File folder = new File("data/AirportDataReStore/LocationBasedKey/" + lat + "/" + lon+"/");
+						File[] listOfFiles = folder.listFiles();
+						for(int i = 0; i < listOfFiles.length; i++)
+						{
+							if(listOfFiles[i].isFile())
+							{
+								String fileName = listOfFiles[i].getName();
+								// remove the .point extension
+								fileName = fileName.substring(0, fileName.length() - 6);
+								airportCodes.add(fileName);
+							}
+						}
+					}
+					catch(Exception e)
+					{
+						// ignore
+					}
+				}
+			}
+			//Timestamp now2 = new Timestamp(System.currentTimeMillis());
+			//System.out.println("Time to grab: " + (now2.getTime() - now.getTime()) + "ms");
+			return airportCodes;
+		}
+		
+		return null;
 	}
 	
 	public static Airport getAirport(String airportCode)
@@ -144,7 +193,7 @@ public class AirportGrabber
 		
 		// now we need to remove any airports that are not in the airport data file
 		airportDataFile = cleanUpAirports(airportDataFile);
-		
+		airportDataFile = cleanAirportRunwaysTypes(airportDataFile);
 	}
 	
 	private static String[][] cleanUpAirports(String[][] airports)
@@ -157,15 +206,24 @@ public class AirportGrabber
 		// we will remove these rows from the file
 		// this method will return a new file with the rows removed
 		
+		String[] dontWant = {"heliport","closed","seaplane_base","baloonport","small_airport"};
+		
 		ArrayList<String[]> cleanAirports = new ArrayList<>();
 		for(String[] airport : airports)
 		{
-			if(airport[2].equals("heliport") || airport[2].equals("closed") || airport[2].equals("seaplane_base"))
+			boolean want = true;
+			for(String dontWantThis : dontWant)
 			{
-				ignoredAirports.add(airport[1]);
-				continue;
+				if(airport[2].equals(dontWantThis))
+				{
+					ignoredAirports.add(airport[1]);
+					want = false;
+				}
 			}
-			cleanAirports.add(airport);
+			if(want)
+			{
+				cleanAirports.add(airport);
+			}
 		}
 		
 		String[][] cleanAirportsArray = new String[cleanAirports.size()][];
@@ -225,11 +283,40 @@ public class AirportGrabber
 		return cleanAirportsArray;
 	}
 	
-	private static String[][] cleanUpRunways(String[][] runways)
+	private static String[][] cleanAirportRunwaysTypes(String[][] airportdatafiile)
 	{
-		// because of cleaning up the airports, we need to clean up the runways
-		// the runways we need
-		return null;
+		ArrayList<String[]> retAirports = new ArrayList<>();
+		
+		String[] hardSurfaceRunways = {"CONC","ASPH","ASP","CON","Concrete","Asphalt","Concrete - Grooved","ASPH-G","PEM",
+				"ASPH-G","ASPH-TRTD","ASPH-F","ASPH-E","ASPH-CONC","BIT","ASPH-L","PEM","ASP/CONC","Bituminous"};
+		
+		
+		for(String[] airportString : airportdatafiile)
+		{
+			Airport airport = getAirport(airportString[1]);
+			boolean want = false;
+			for(Runway runway : airport.runways)
+			{
+				for(String surf : hardSurfaceRunways)
+				{
+					if(surf.equals(runway.surface))
+					{
+						want = true;
+					}
+				}
+			}
+			if(want)
+			{
+				retAirports.add(airportString);
+			}
+		}
+		
+		String[][] cleanAirportsArray = new String[retAirports.size()][];
+		for(int i = 0; i < retAirports.size(); i++)
+		{
+			cleanAirportsArray[i] = retAirports.get(i);
+		}
+		return cleanAirportsArray;
 	}
 	
 	private static String[][] removeFirstItem(String[][] file)
@@ -269,6 +356,13 @@ public class AirportGrabber
 			airportFile = airportDataFile;
 		}
 		
+		// TODO
+		// this should be a binary search
+		// I can't get it to work right now
+		// I will need to figure out how to do a binary search
+		
+		
+		//*
 		for(int i = 0; i < airportFile.length; i++)
 		{
 			if(airportFile[i][1].equals(airportCode))
@@ -276,7 +370,81 @@ public class AirportGrabber
 				return airportFile[i];
 			}
 		}
-		return null;
+		// */
+		return recurseBinarySearch(airportFile, airportCode, 0, airportFile.length - 1);
+		//return null;
+	}
+	
+	private static String[] recurseBinarySearch(String[][] file, String airportCode, int start, int end)
+	{
+		if(start > end)
+		{
+			return null;
+		}
+		int mid = (start + end) / 2;
+		if(file[mid][1].equals(airportCode))
+		{
+			return file[mid];
+		}
+		if(StringGreaterThan(file[mid][1], airportCode))
+		{
+			return recurseBinarySearch(file, airportCode, start, mid - 1);
+		}
+		else
+		{
+			return recurseBinarySearch(file, airportCode, mid + 1, end);
+		}
+	}
+	
+	private static boolean StringGreaterThan(String s1, String s2)
+	{
+		// the strings will be compared based on alphabetical order
+		// if s1 is greater than s2, return true
+		// if s1 is less than s2, return false
+		// if s1 is equal to s2, return false
+		
+		// if s1 is null, return false
+		// if s2 is null, return true
+		
+		
+		
+		if(s1 == null)
+		{
+			return false;
+		}
+		if(s2 == null)
+		{
+			return true;
+		}
+		
+		// the strings may have dashes in them
+		// remove the dashes
+		s1 = s1.replace("-", "");
+		s2 = s2.replace("-", "");
+		
+		
+		int i = 0;
+		while(i < s1.length() && i < s2.length())
+		{
+			if(s1.charAt(i) > s2.charAt(i))
+			{
+				return true;
+			}
+			if(s1.charAt(i) < s2.charAt(i))
+			{
+				return false;
+			}
+			i++;
+		}
+		if(i == s1.length() && i == s2.length())
+		{
+			return false;
+		}
+		if(i == s1.length())
+		{
+			return false;
+		}
+		return true;
 	}
 	
 	public static ArrayList<String[]> getRunwaysFromCSV(String airportCode)
