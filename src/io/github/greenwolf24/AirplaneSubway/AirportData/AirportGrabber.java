@@ -25,6 +25,14 @@ public class AirportGrabber
 		loadFileToMemory();
 	}
 	
+	public AirportGrabber(boolean loadFileToMemory)
+	{
+		if(loadFileToMemory)
+		{
+			loadFileToMemory();
+		}
+	}
+	
 	public static void main(String[] args)
 	{
 		// ask user for airport ICAO code
