@@ -22,14 +22,18 @@ public class AirportGrabber
 	
 	public AirportGrabber()
 	{
-		loadFileToMemory();
+		loadRawFileToMemory();
 	}
 	
-	public AirportGrabber(boolean loadFileToMemory)
+	public AirportGrabber(boolean loadSortedFileToMemory)
 	{
-		if(loadFileToMemory)
+		if(loadSortedFileToMemory)
 		{
-			loadFileToMemory();
+			loadSortedFileToMemory();
+		}
+		else
+		{
+			loadRawFileToMemory();
 		}
 	}
 	
@@ -189,7 +193,13 @@ public class AirportGrabber
 		return Integer.parseInt(heading);
 	}
 	
-	public static void loadFileToMemory()
+	private static void loadRawFileToMemory()
+	{
+		airportDataFile = CSVFile.getFile("data/AirportDataDatabase/airports.csv");
+		runwayDataFile = CSVFile.getFile("data/AirportDataDatabase/runways.csv");
+	}
+	
+	public static void loadSortedFileToMemory()
 	{
 		airportDataFile = CSVFile.getFile("data/AirportDataDatabase/airports.csv");
 		runwayDataFile = CSVFile.getFile("data/AirportDataDatabase/runways.csv");

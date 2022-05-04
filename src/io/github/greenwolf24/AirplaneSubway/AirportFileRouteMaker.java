@@ -4,7 +4,6 @@ import io.github.greenwolf24.AirplaneSubway.AirportData.Airport;
 import io.github.greenwolf24.AirplaneSubway.AirportData.AirportGrabber;
 import io.github.greenwolf24.KMLmanage.Maker.PathMaker;
 import io.github.greenwolf24.KMLmanage.Util.Position;
-import jdk.swing.interop.SwingInterOpUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,7 +19,9 @@ public class AirportFileRouteMaker
 	{
 		try
 		{
-			File file = new File("data/FlightNums.csv");
+			// note for targetFileName: do not include the .txt extension
+			String targetFileName = "MalaysianLine";
+			File file = new File("data/TXTin/" + targetFileName + ".txt");
 			ArrayList<String> airports = new ArrayList<String>();
 			BufferedReader br = new BufferedReader(new java.io.FileReader(file));
 			String line;
@@ -60,8 +61,9 @@ public class AirportFileRouteMaker
 			for(int i = 0; i < airports.size(); i++)
 			{
 				String airportName = airports.get(i);
+				System.out.print("Looking for " + airportName + "... ");
 				Airport airport = grabber.getAirport(airportName);
-				System.out.println("Adding " + airport.ICAO + " to the route");
+				System.out.println("Found: " + airport.ICAO);
 				// the airport altitude is in feet, so we need to convert it to meters
 				int altitude = (int)(airport.altitude * 0.3048);
 				Position position = new Position(airport.latitude, airport.longitude, altitude);
@@ -71,7 +73,7 @@ public class AirportFileRouteMaker
 			// now we have a list of positions
 			// we need to make a kml route
 			PathMaker pathMaker = new PathMaker("data/KMLout/");
-			pathMaker.makePathLine(positions,"OutputPath",false);
+			pathMaker.makePathLine(positions,targetFileName,false);
 			
 			// we are done
 			System.out.println("Done!");

@@ -16,7 +16,7 @@ public class AirRouteFinderMaker
 		// the user will be asked for the optimal distance between airports
 		// the user will be asked for the minimum and maximum distance between airports
 		
-		airportGrabber.loadFileToMemory();
+		airportGrabber.loadSortedFileToMemory();
 		
 		String startAirport;
 		String endAirport;

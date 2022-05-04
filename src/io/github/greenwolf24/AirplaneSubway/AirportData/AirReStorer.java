@@ -10,7 +10,7 @@ public class AirReStorer
 	public static void main(String[] args)
 	{
 		AirportGrabber grabber = new AirportGrabber();
-		grabber.loadFileToMemory();
+		grabber.loadSortedFileToMemory();
 		ArrayList<String> airportICAO = grabber.allAirportCodes();
 		
 		for(String code : airportICAO)
