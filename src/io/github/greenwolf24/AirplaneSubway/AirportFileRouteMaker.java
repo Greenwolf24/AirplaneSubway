@@ -17,25 +17,48 @@ public class AirportFileRouteMaker
 	// the file should be a list of airports, one per line, with the first airport listed first, and the last airport listed last
 	public static void main(String[] args)
 	{
-		try
+		AirportGrabber grabber = new AirportGrabber(false);
+		
+		// get the list of files to process
+		File[] files = new File("data/TXTin/").listFiles();
+		// remove any folders, keeping only the files
+		ArrayList<File> filesList = new ArrayList<File>();
+		for (File file : files)
 		{
-			// note for targetFileName: do not include the .txt extension
-			String targetFileName = "MalaysianLine";
-			File file = new File("data/TXTin/" + targetFileName + ".txt");
-			ArrayList<String> airports = new ArrayList<String>();
-			BufferedReader br = new BufferedReader(new java.io.FileReader(file));
-			String line;
-			while ((line = br.readLine()) != null)
+			if (file.isFile())
 			{
-				airports.add(line);
+				filesList.add(file);
 			}
-			br.close();
-			
-			// now we have a list of airports
-			// now we want to make a kml path between them
-			// we start by creating an AirportGrabber object
-			AirportGrabber grabber = new AirportGrabber(false);
-			//grabber.loadFileToMemory();
+		}
+		files = filesList.toArray(new File[0]);
+		// create a list of strings that is the names of the files without the extension
+		ArrayList<String> filesNames = new ArrayList<String>();
+		for (File file : files)
+		{
+			filesNames.add(file.getName().replaceAll(".txt", ""));
+		}
+		
+		// for every string in the list of files, create a route between the airports
+		for (String fileName : filesNames)
+		{
+			try
+			{
+				// note for targetFileName: do not include the .txt extension
+				//String targetFileName = "NorthSeaLoopback";
+				File file = new File("data/TXTin/" + fileName + ".txt");
+				ArrayList<String> airports = new ArrayList<String>();
+				BufferedReader br = new BufferedReader(new java.io.FileReader(file));
+				String line;
+				while((line = br.readLine()) != null)
+				{
+					airports.add(line);
+				}
+				br.close();
+				
+				// now we have a list of airports
+				// now we want to make a kml path between them
+				// we start by creating an AirportGrabber object
+				//grabber.loadFileToMemory();
 			
 			
 			/*
@@ -55,28 +78,28 @@ public class AirportFileRouteMaker
 			System.out.print("What is the first number?: ");
 			int firstNum = new Scanner(System.in).nextInt();
 			//*/
-			
-			// now we have access to all the information we need to make the route
-			ArrayList<io.github.greenwolf24.KMLmanage.Util.Position> positions = new ArrayList<>();
-			for(int i = 0; i < airports.size(); i++)
-			{
-				String airportName = airports.get(i);
-				System.out.print("Looking for " + airportName + "... ");
-				Airport airport = grabber.getAirport(airportName);
-				System.out.println("Found: " + airport.ICAO);
-				// the airport altitude is in feet, so we need to convert it to meters
-				int altitude = (int)(airport.altitude * 0.3048);
-				Position position = new Position(airport.latitude, airport.longitude, altitude);
-				positions.add(position);
-			}
-			
-			// now we have a list of positions
-			// we need to make a kml route
-			PathMaker pathMaker = new PathMaker("data/KMLout/");
-			pathMaker.makePathLine(positions,targetFileName,false);
-			
-			// we are done
-			System.out.println("Done!");
+				
+				// now we have access to all the information we need to make the route
+				ArrayList<io.github.greenwolf24.KMLmanage.Util.Position> positions = new ArrayList<>();
+				for(int i = 0; i < airports.size(); i++)
+				{
+					String airportName = airports.get(i);
+					System.out.print("Looking for " + airportName + "... ");
+					Airport airport = grabber.getAirport(airportName);
+					System.out.println("Found: " + airport.ICAO);
+					// the airport altitude is in feet, so we need to convert it to meters
+					int altitude = (int) (airport.altitude * 0.3048);
+					Position position = new Position(airport.latitude, airport.longitude, altitude);
+					positions.add(position);
+				}
+				
+				// now we have a list of positions
+				// we need to make a kml route
+				PathMaker pathMaker = new PathMaker("data/KMLout/");
+				pathMaker.makePathLine(positions, fileName, false);
+				
+				// we are done
+				System.out.println("Done!");
 			
 			/*
 			for(int i = 0; i < airports.size(); i++)
@@ -90,10 +113,10 @@ public class AirportFileRouteMaker
 				
 			}
 			//*/
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
+			} catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	

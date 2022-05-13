@@ -195,7 +195,8 @@ public class AirportGrabber
 	
 	private static void loadRawFileToMemory()
 	{
-		airportDataFile = CSVFile.getFile("data/AirportDataDatabase/airports.csv");
+		airportDataFile = cleanAirportCommaName2(CSVFile.getFile("data/AirportDataDatabase/airports.csv"));
+		//airportDataFile = cleanAirportCommaName(airportDataFile);
 		runwayDataFile = CSVFile.getFile("data/AirportDataDatabase/runways.csv");
 	}
 	
@@ -260,6 +261,66 @@ public class AirportGrabber
 		cleanAirportsArray = cleanAirportCommaName(cleanAirportsArray);
 		
 		return cleanAirportsArray;
+	}
+	
+	private static String[][] cleanAirportCommaName2(String[][] airports)
+	{
+		// this is a second version of the method above
+		// I don't remember why the first version won't work with the full-raw loaded file
+		// for each line, check if index 3 is a string, and if index 4 is a double
+		// if both are true, then we can skip the line
+		// otherwise, we need to reformat the line
+		ArrayList<String[]> cleanAirports = new ArrayList<>();
+		for(String[] airport : airports)
+		{
+			// it is possible the top line is a header with data types, not data
+			// we can check this simply because the labels are known
+			if(airport[3].equals("name") && airport[4].equals("latitude_deg"))
+			{
+				continue;
+			}
+			// it is possible there is a blank line at the end of the file
+			// this will cause an error when we try to read the line
+			// so we need to check if the line is empty
+			if(airport.length == 0)
+			{
+				continue;
+			}
+			cleanAirports.add(fixAirportLine(airport));
+		}
+		// convert the arraylist to an array
+		String[][] cleanAirportsArray = new String[cleanAirports.size()][];
+		for(int i = 0; i < cleanAirports.size(); i++)
+		{
+			cleanAirportsArray[i] = cleanAirports.get(i);
+		}
+		return cleanAirportsArray;
+	}
+	
+	private static String[] fixAirportLine(String[] airport)
+	{
+		// this method will take an airport line and reformat it
+		// if index 4 is a double, then we can skip the line
+		// otherwise, we need to reformat the line
+		try
+		{
+			Double.parseDouble(airport[4]);
+			return airport;
+		}
+		catch(NumberFormatException e)
+		{
+			// this is a bad line, we need to reformat it
+			String[] newAirport = new String[airport.length-1];
+			newAirport[0] = airport[0];
+			newAirport[1] = airport[1];
+			newAirport[2] = airport[2];
+			newAirport[3] = airport[3] + "," + airport[4];
+			for(int i = 5; i < airport.length; i++)
+			{
+				newAirport[i-1] = airport[i];
+			}
+			return fixAirportLine(newAirport);
+		}
 	}
 	
 	private static String[][] cleanAirportCommaName(String[][] cleanAirportsArray)
